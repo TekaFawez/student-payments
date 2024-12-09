@@ -3,6 +3,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { StudentService } from '../services/student.service';
+import { Student } from '../model/students.model';
 
 @Component({
   selector: 'app-students',
@@ -12,34 +14,47 @@ import { Router } from '@angular/router';
 export class StudentsComponent implements OnInit,AfterViewInit {
 
 
-  public students:any
-  public displayedColumns =["id","firstName","lastName","payments"] 
+  public students!:Student[]
+  public displayedColumns =["id","firstName","lastName","code","payments","programId"] 
    public dataSource:any
   @ViewChild(MatPaginator) paginator! :MatPaginator
   @ViewChild(MatSort) sort!:MatSort
 
-  constructor(private router:Router){}
+  constructor(private router:Router,
+    private service:StudentService
+  ){}
   ngAfterViewInit(): void {
     this.dataSource.paginator=this.paginator
     this.dataSource.sort=this.sort;
 
   }
   ngOnInit(): void {
-this.students=[];
-for(let i=0;i<100;i++){
-  this.students.push({
-    id:i,firstName:Math.random().toString(20),lastName:Math.random().toString(20)
-  })
+    this.service.getAllStudents()
+    .subscribe({
+      next:data=>{
+        this.students=data;
+        this.dataSource=new MatTableDataSource(this.students)
+        this.dataSource.paginator=this.paginator
+        this.dataSource.sort=this.sort;
 
-}
-this.dataSource=new MatTableDataSource(this.students)
-this.dataSource.paginator=this.paginator
+
+
+      },
+      error:err=>{
+        console.error(err);
+        
+      }
+    })
+
+
   }
   filterStudents(event: Event) {
     let value = (event.target as HTMLInputElement).value;
     this.dataSource.filter = value;
     }
-    getPayments(student : any) {
-      this.router.navigateByUrl("/payments")
+
+
+    getPayments(student : Student) {
+      this.router.navigateByUrl(`/admin/student-details/${student.code}`)
     }
 }

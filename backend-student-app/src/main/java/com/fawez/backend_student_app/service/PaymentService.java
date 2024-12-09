@@ -1,5 +1,6 @@
 package com.fawez.backend_student_app.service;
 
+import com.fawez.backend_student_app.dto.NewPaymentDto;
 import com.fawez.backend_student_app.dto.PaymentDto;
 import com.fawez.backend_student_app.entities.Payment;
 import com.fawez.backend_student_app.entities.PaymentStatus;
@@ -17,7 +18,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -35,9 +39,7 @@ public class PaymentService {
 
     }
     public PaymentDto savePayment(MultipartFile file,
-                                  double amount ,
-                                  String studentCode, PaymentType type,
-                                  LocalDate date) throws IOException {
+                                  NewPaymentDto newPaymentDto) throws IOException {
         Path folderPath= Paths.get(System.getProperty("user.home"),"ecole-students","payments");
 
         if(!Files.exists(folderPath)){
@@ -47,17 +49,32 @@ public class PaymentService {
         Path filePath=Paths.get(System.getProperty("user.home"),"ecole-students","payments",fileName+".pdf");
         Files.copy(file.getInputStream(),filePath);
 
-        Student student=studentRepository.findByCode(studentCode);
+        Student student=studentRepository.findByCode(newPaymentDto.getStudentCode());
         Payment payment=Payment.builder()
-                .type(type)
+                .type(newPaymentDto.getType())
                 .student(student)
-                .amount(amount)
+                .amount(newPaymentDto.getAmount())
                 .status(PaymentStatus.CREATED)
                 .file(filePath.toUri().toString())
-                .date(date)
+                .date(newPaymentDto.getDate())
                 .build();
         Payment save= paymentRepository.save(payment);
         return PaymentMapper.toPaymentDto(save);
 
+    }
+
+    public PaymentDto updatePaymentStatus(PaymentStatus status, Long paymentId) {
+        Payment payment=paymentRepository.findById(paymentId).get();
+         payment.setStatus(status);
+        Payment savePayment= paymentRepository.save(payment);
+         return PaymentMapper.toPaymentDto(savePayment);
+
+    }
+
+    public List<PaymentDto> findByStudentCode(String code) {
+        List<Payment> paymentList=paymentRepository.findByStudentCode(code);
+        return paymentList.stream()
+                .map(PaymentMapper::toPaymentDto)
+                .collect(Collectors.toList());
     }
 }

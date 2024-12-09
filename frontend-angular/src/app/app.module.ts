@@ -27,6 +27,14 @@ import { MatPaginator } from '@angular/material/paginator';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthGuard } from './guards/auth.guard';
 import { AuthorizationGuard } from './guards/authorization.guard';
+import { HttpClientModule } from '@angular/common/http';
+import { StudentDetailsComponent } from './student-details/student-details.component';
+import { NewPaymentComponent } from './new-payment/new-payment.component';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import {MatSelectModule} from '@angular/material/select';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -39,7 +47,10 @@ import { AuthorizationGuard } from './guards/authorization.guard';
     StudentsComponent,
     PaymentsComponent,
     LoadStudentsComponent,
-    LoadPaymentsComponent
+    LoadPaymentsComponent,
+    StudentDetailsComponent,
+    NewPaymentComponent,
+     
   ],
   imports: [
     BrowserModule,
@@ -60,6 +71,12 @@ import { AuthorizationGuard } from './guards/authorization.guard';
     MatInput,
     MatFormFieldModule,
     ReactiveFormsModule,
+    HttpClientModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSelectModule,
+    PdfViewerModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     provideAnimationsAsync(),

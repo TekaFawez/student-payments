@@ -1,8 +1,10 @@
 package com.fawez.backend_student_app.web;
 
+import com.fawez.backend_student_app.dto.NewPaymentDto;
 import com.fawez.backend_student_app.dto.PaymentDto;
 import com.fawez.backend_student_app.dto.StudentDto;
 import com.fawez.backend_student_app.entities.Payment;
+import com.fawez.backend_student_app.entities.PaymentStatus;
 import com.fawez.backend_student_app.entities.PaymentType;
 import com.fawez.backend_student_app.mapper.PaymentMapper;
 import com.fawez.backend_student_app.repository.PaymentRepository;
@@ -46,9 +48,8 @@ public final PaymentService paymentService;
     }
 
     @PostMapping(path="/payments", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public PaymentDto payment(@Parameter(description = "The payment file") @RequestParam MultipartFile file, double amount, PaymentType type,
-                              LocalDate date, String studentCode) throws IOException {
-       return paymentService.savePayment(file,amount,studentCode,type,date);
+    public PaymentDto payment(@RequestParam("file") MultipartFile file, NewPaymentDto newPaymentDto) throws IOException {
+       return paymentService.savePayment(file,newPaymentDto);
 
     }
     @GetMapping(path="payments/{id}/file",produces = MediaType.APPLICATION_PDF_VALUE)
@@ -56,4 +57,11 @@ public final PaymentService paymentService;
         return paymentService.getPaymentFile(id);
 
     }
+    @GetMapping("/students/{code}/payments")
+    public List<PaymentDto> paymentsByStudentCode(@PathVariable String code){
+        return paymentService.findByStudentCode(code);
+    }
+    @PutMapping("/payments/{paymentId}/updateStatus")
+    public PaymentDto updatePaymentStatus(@RequestParam PaymentStatus status, @PathVariable Long paymentId){
+        return paymentService.updatePaymentStatus(status,paymentId);}
 }

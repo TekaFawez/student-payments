@@ -8,7 +8,7 @@ public class PaymentMapper {
     public static Payment toPayment(PaymentDto paymentDto){
         return Payment.builder()
                 .student(Student.builder()
-                        .id(paymentDto.getStudentId())
+                        .id(paymentDto.getFirstName())
                         .build())
                 .file(paymentDto.getFile())
                 .type(paymentDto.getType())
@@ -26,7 +26,7 @@ public class PaymentMapper {
                 payment.getType(),
                 payment.getStatus(),
                 payment.getFile(),
-                payment.getStudent().getId()
+                payment.getStudent().getFirstName()
         );
     }
 }
